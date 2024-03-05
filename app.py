@@ -1,7 +1,7 @@
 import gradio as gr
 
-def greet(name):
-    return "Hello " + name + "!!"
+def get_secret(secret: str):
+    return f"The secret you entered is: {secret}"
 
-iface = gr.Interface(fn=greet, inputs="text", outputs="text")
+iface = gr.Interface(fn=get_secret, inputs="text", outputs="text", title="Secret Input", description="Enter your secret:")
 iface.launch()
