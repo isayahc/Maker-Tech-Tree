@@ -63,7 +63,8 @@ experiment_prompt = PromptTemplate(
 )
 
 maker_prompt = PromptTemplate(
-    template="You must generate a well detailed list of items for creating a given item from scratch.\n{format_instructions}\n{question}\n{context}",
+    template="You must generate a well detailed list of items for creating a given item from scratch. \
+        Also describe the purpose for a text-to-3d model to use for extra context\n{format_instructions}\n{question}\n{context}",
     input_variables=["question"],
     partial_variables={"format_instructions": format_instructions},
     memory = memory

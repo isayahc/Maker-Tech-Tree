@@ -1,5 +1,7 @@
 import gradio as gr
+from get_blender import main
 
+main()
 def process_text(input_text):
     # Your processing logic here
     return input_text.upper()
