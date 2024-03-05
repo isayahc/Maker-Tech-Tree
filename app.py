@@ -1,7 +1,19 @@
 import gradio as gr
 
-def get_secret(secret: str):
-    return f"The secret you entered is: {secret}"
+def process_text(input_text):
+    # Your processing logic here
+    return input_text.upper()
 
-iface = gr.Interface(fn=get_secret, inputs="text", outputs="text", title="Secret Input", description="Enter your secret:")
-iface.launch()
+textbox = gr.Textbox(
+    lines=5,
+    placeholder="Type your text here...",
+    interactive=False  # Set this to False to hide the input
+)
+
+interface = gr.Interface(
+    fn=process_text,
+    inputs=textbox,
+    outputs="text"
+)
+
+interface.launch()
