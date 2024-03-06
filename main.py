@@ -7,7 +7,7 @@ from mesh_utils import generate_mesh_images
 from gradio_client import Client
 from weaviate_utils import init_client
 from datetime import datetime
-from structured__apparatus_chain import (
+from structured_apparatus_chain import (
     wikipedia_chain
 )
 from datetime import datetime, timezone
