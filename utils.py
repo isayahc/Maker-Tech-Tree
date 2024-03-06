@@ -1,5 +1,6 @@
-import shutil
 import trimesh
+import shutil
+import base64
 import os
 
 def save_file(input_file, output_file):
@@ -42,3 +43,33 @@ def change_file_extension(file_path: str, new_extension: str) -> str:
     base_path, _ = os.path.splitext(file_path)
     new_file_path = base_path + '.' + new_extension
     return new_file_path
+
+        
+def file_to_base64(file_location: str) -> str:
+    """
+    This function is to convert files into base64
+    ## Input
+    file_location (str) : the location of the file on the machine
+    
+    ## Output
+    the base64 encoding of the file
+    """
+    with open(file_location, "rb") as file:
+        file_content = file.read()
+        base64_encoded = base64.b64encode(file_content)
+        return base64_encoded.decode("utf-8")
+    
+def base64_to_file(base64_string: str, output_file_location: str) -> None:
+    """
+    Decodes a base64-encoded string and writes the resulting binary data to a file.
+
+    Args:
+        base64_string (str): The base64-encoded string to decode.
+        output_file_location (str): The file path where the decoded binary data will be written.
+
+    Returns:
+        None
+    """
+    binary_data = base64.b64decode(base64_string)
+    with open(output_file_location, "wb") as output_file:
+        output_file.write(binary_data)
