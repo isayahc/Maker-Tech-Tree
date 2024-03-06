@@ -23,6 +23,8 @@ def init_client():
 
 
 
+x = 0
+
 try:
     client = init_client()
     client.collections.create(
@@ -36,6 +38,7 @@ try:
         wvc.config.Property(name="FeildsOfStudy", data_type=wvc.config.DataType.TEXT_ARRAY),
         wvc.config.Property(name="ToolName", data_type=wvc.config.DataType.TEXT),
         wvc.config.Property(name="Tags", data_type=wvc.config.DataType.TEXT_ARRAY),
+        wvc.config.Property(name="GlbBlob", data_type=wvc.config.DataType.BLOB),
     ]
 )
 finally:
