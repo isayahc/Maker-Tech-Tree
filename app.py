@@ -49,7 +49,6 @@ def generate_apparatus(input_text, retriever_choice):
     component_collection = weaviate_client.collections.get("Component")
     
     bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
-    # manager = CloudStorageManager(bucket_name)
     
     bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
     
@@ -140,7 +139,12 @@ def review_3d_model(uuid:str) -> None:
     """input the uuid of a 3d model"""
     uuid = uuid.replace("-","")
     bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
-    manager = CloudStorageManager(bucket_name)
+    
+    
+    credentials_str = SERVICE_ACOUNT_STUFF = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+
+    # Create an instance of CloudStorageManager
+    manager = CloudStorageManager(bucket_name, credentials_str)
     xx = manager.get_file_by_uuid(uuid)
     manager.download_file(
         xx,
