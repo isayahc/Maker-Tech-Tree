@@ -3,17 +3,24 @@ from mpl_toolkits import mplot3d
 from matplotlib import pyplot as plt
 from typing import List, Tuple
 
-def generate_mesh_images(file_path: str, viewing_angles: List[Tuple[int, int]], output_prefix: str = 'mesh_') -> None:
+
+def generate_mesh_images(file_path: str, viewing_angles: List[Tuple[int, int]], output_prefix: str = 'mesh_') -> List[str]:
     """
-    Generate images of an STL file from different viewing angles.
+    Generate images of an STL file from different viewing angles and return their file paths.
 
     Args:
         file_path (str): Path to the STL file.
         viewing_angles (List[Tuple[int, int]]): List of tuples containing the elevation and azimuth angles for viewing.
         output_prefix (str, optional): Prefix for the output image filenames. Defaults to 'mesh_'.
+
+    Returns:
+        List[str]: List of file paths of the generated images.
     """
     # Load the STL file
     your_mesh = mesh.Mesh.from_file(file_path)
+
+    # List to store the file paths of the generated images
+    image_paths = []
 
     # Iterate over each viewing angle and generate an image
     for i, (elev, azim) in enumerate(viewing_angles, start=1):
@@ -37,12 +44,18 @@ def generate_mesh_images(file_path: str, viewing_angles: List[Tuple[int, int]], 
         ax.view_init(elev=elev, azim=azim)
 
         # Save the plot as an image
-        plt.savefig(f'{output_prefix}{i}.png')
+        image_path = f'{output_prefix}{i}.png'
+        plt.savefig(image_path)
+        image_paths.append(image_path)
 
         # Close the plot to avoid memory leaks
         plt.close()
 
-# Example usage:
-file_path = 'sample_data.stl'
-viewing_angles = [(30, 45), (60, 90), (45, 135)]
-generate_mesh_images(file_path, viewing_angles)
+    return image_paths
+
+
+if __name__ == "__main__":
+    # Example usage:
+    # file_path = 'sample_data.stl'
+    viewing_angles = [(30, 45), (60, 90), (45, 135)]
+    # generate_mesh_images(file_path, viewing_angles)
