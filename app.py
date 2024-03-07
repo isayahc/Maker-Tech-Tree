@@ -51,6 +51,13 @@ def generate_apparatus(input_text, retriever_choice):
     bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
     manager = CloudStorageManager(bucket_name)
     
+    bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
+    
+    credentials_str = SERVICE_ACOUNT_STUFF = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+
+    # Create an instance of CloudStorageManager
+    storage_manager = CloudStorageManager(bucket_name, credentials_str)
+    
     for i in app_components:
         
         client = ShapEClient("hysts/Shap-E")
@@ -142,12 +149,12 @@ def review_3d_model(uuid:str) -> None:
     convert_obj_to_stl(xx,xx_as_stl)
     viewing_angles = [(30, 45), (60, 90), (45, 135)]
     
-    prompt = "I am creating an 3d model of a Glass lenses for refracting light,\
+    prompt = "I am creating an 3d model ,\
     using a text-to-3d model\
     Do these images look correct?\
-    If not please make a suggesttion on how to improve the text input\
-    As this response will be used in a pipeline please only output a new \
-    potential prompt or output nothing, "
+    If not please make a suggesttion on how to improve the text input"
+    # As this response will be used in a pipeline please only output a new"  
+    # potential prompt or output nothing, "
     # Please keep the prompt to 5 25 words to not confuse the model"
     
     images = generate_mesh_images(
