@@ -140,7 +140,6 @@ def review_3d_model(uuid:str) -> None:
     uuid = uuid.replace("-","")
     bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
     
-    
     credentials_str = SERVICE_ACOUNT_STUFF = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 
     # Create an instance of CloudStorageManager
@@ -179,7 +178,20 @@ def review_3d_model(uuid:str) -> None:
     remove_files([xx,xx_as_stl])
     return response
     
+def download_3d_model(uuid:str):
+    uuid = uuid.replace("-","")
+    bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
     
+    credentials_str = SERVICE_ACOUNT_STUFF = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+
+    # Create an instance of CloudStorageManager
+    manager = CloudStorageManager(bucket_name, credentials_str)
+    xx = manager.get_file_by_uuid(uuid)
+    manager.download_file(
+        xx,
+        xx
+    )
+    return xx
 
 generate_apparatus_interface = gr.Interface(
     fn=generate_apparatus,
@@ -221,18 +233,29 @@ review_3d_model_interface = gr.Interface(
     description="Input the UUID of a 3D model to review its images and provide feedback.",
 )
 
+download_3d_model_interface = gr.Interface(
+    fn=download_3d_model,
+    inputs=["text"],
+    outputs=gr.File(label="Input File"),
+    title="Review 3D Model",
+    description="Input the UUID of a 3D model to review its images and provide feedback.",
+)
+
+
 demo = gr.TabbedInterface([
     generate_apparatus_interface, 
     generate_experiment_interface,
     search_experiments_interface,
     search_apparatus_interface,
     review_3d_model_interface,
+    download_3d_model_interface,
 ], [
     "Generate Apparatus",
     "Generate Experiment", 
     "Search Existing Experiments",
     "Search Existing Apparatuses",
-    "review_3d_model_interface"
+    "review_3d_model_interface",
+    "download_3d_model_interface"
     ])
 
 if __name__ == "__main__":
