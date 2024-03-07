@@ -52,18 +52,22 @@ def main() :
     try:
         client = init_client()
         client.collections.create(
-        name="ScienceEperiment",
+        name="ScienceExperiment",
         description="Science Experiment with the goal of making something",
         vectorizer_config=wvc.config.Configure.Vectorizer.text2vec_openai(),
         properties=[
-            # wvc.config.Property(name="id", data_type=wvc.config.DataType.UUID),
-            wvc.config.Property(name="DateCreated", data_type=wvc.config.DataType.DATE),
-            wvc.config.Property(name="UsedInComps", data_type=wvc.config.DataType.TEXT_ARRAY),
-            wvc.config.Property(name="FeildsOfStudy", data_type=wvc.config.DataType.TEXT_ARRAY),
-            wvc.config.Property(name="ToolName", data_type=wvc.config.DataType.TEXT),
-            wvc.config.Property(name="Tags", data_type=wvc.config.DataType.TEXT_ARRAY),
-        ]
-    )
+        wvc.config.Property(name="DateCreated", data_type=wvc.config.DataType.DATE),
+        wvc.config.Property(name="UsedInComps", data_type=wvc.config.DataType.TEXT_ARRAY),
+        wvc.config.Property(name="FieldsOfStudy", data_type=wvc.config.DataType.TEXT_ARRAY),
+        wvc.config.Property(name="Experiment_Name", data_type=wvc.config.DataType.TEXT),
+        wvc.config.Property(name="Material", data_type=wvc.config.DataType.TEXT_ARRAY),
+        wvc.config.Property(name="Sources", data_type=wvc.config.DataType.TEXT_ARRAY),
+        wvc.config.Property(name="Protocal", data_type=wvc.config.DataType.TEXT_ARRAY),
+        wvc.config.Property(name="Purpose_of_Experiments", data_type=wvc.config.DataType.TEXT),
+        wvc.config.Property(name="Safety_Precaution", data_type=wvc.config.DataType.TEXT),
+        wvc.config.Property(name="Level_of_Difficulty", data_type=wvc.config.DataType.TEXT),
+    ]
+)
     finally:
         client.close()
 
