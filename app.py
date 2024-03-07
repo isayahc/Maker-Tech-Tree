@@ -49,14 +49,15 @@ def generate_apparatus(input_text, retriever_choice):
     component_collection = weaviate_client.collections.get("Component")
     
     bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
-    manager = CloudStorageManager(bucket_name)
+    # manager = CloudStorageManager(bucket_name)
     
     bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
     
     credentials_str = SERVICE_ACOUNT_STUFF = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 
     # Create an instance of CloudStorageManager
-    storage_manager = CloudStorageManager(bucket_name, credentials_str)
+    manager = CloudStorageManager(bucket_name, credentials_str)
+    
     
     for i in app_components:
         

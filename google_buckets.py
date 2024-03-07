@@ -36,7 +36,6 @@ class CloudStorageManager:
 
 def main():
     # Replace 'your_bucket_name' with your actual bucket name
-    bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
 
     # Replace 'your_credentials_str' with your actual credentials string
     # credentials_str = """
@@ -54,6 +53,8 @@ def main():
     # }
     # """
     
+    bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
+    
     credentials_str = SERVICE_ACOUNT_STUFF = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 
     # Create an instance of CloudStorageManager
@@ -61,21 +62,21 @@ def main():
 
     # Example usage:
     # Upload a file
-    storage_manager.upload_file('local_file_path', 'destination_file_name')
+    # storage_manager.upload_file('local_file_path', 'destination_file_name')
 
     # Download a file
-    storage_manager.download_file('source_file_name', 'local_destination_path')
+    # storage_manager.download_file('source_file_name', 'local_destination_path')
 
     # Delete a file
-    storage_manager.delete_file('file_name_to_delete')
+    # storage_manager.delete_file('file_name_to_delete')
 
     # Get file by UUID
-    uuid = 'your_uuid'
-    file_name = storage_manager.get_file_by_uuid(uuid)
-    if file_name:
-        print(f"File with UUID '{uuid}' found: {file_name}")
-    else:
-        print(f"No file found with UUID '{uuid}'")
+    # uuid = 'your_uuid'
+    # file_name = storage_manager.get_file_by_uuid(uuid)
+    # if file_name:
+    #     print(f"File with UUID '{uuid}' found: {file_name}")
+    # else:
+    #     print(f"No file found with UUID '{uuid}'")
 
 
 if __name__ == "__main__":
