@@ -45,6 +45,11 @@ def main():
         "Level_of_Difficulty": exp_data['Level_of_Difficulty'],
     })
     
+    response = science_experiment_collection.query.bm25(
+            query="silk",
+            limit=3
+        )
+    
     jj = science_experiment_collection.query.near_text(
         query="biology",
         limit=2
