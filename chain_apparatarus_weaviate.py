@@ -11,12 +11,19 @@ from structured_experiment_chain import (
     wikipedia_chain as experiment_wikipedia_chain
 )
 
+
+# from google_buckets import upload_file, man
+
 from weaviate_utils import init_client
 
 from datetime import datetime, timezone
 
+from gradio_client import Client as ShapEClient
+import os
 
+from google_buckets import CloudStorageManager
 
+from utils import copy_file_to_location
 
 def main():
     # exp_qury = "fabricating cellolouse based electronics"
@@ -33,9 +40,26 @@ def main():
     component_image_collection = weaviate_client.collections.get("ComponentImage")
     science_experiment_collection = weaviate_client.collections.get("ScienceEperiment")
     
+    
+    bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
+    manager = CloudStorageManager(bucket_name)
+    
+    
+    
     app_components =  app_data["Material"]
     
     for i in app_components:
+        
+        client = ShapEClient("hysts/Shap-E")
+        client.hf_token = os.getenv("HUGGINGFACE_API_KEY")
+        result = client.predict(
+                i,	# str  in 'Prompt' Textbox component
+                1621396601,	# float (numeric value between 0 and 2147483647) in 'Seed' Slider component
+                15,	# float (numeric value between 1 and 20) in 'Guidance scale' Slider component
+                64,	# float (numeric value between 2 and 100) in 'Number of inference steps' Slider component
+                api_name="/text-to-3d"
+        )
+        
     
         app_uuid = component_collection.data.insert({
             "Tags": app_data['Fields_of_study'],
@@ -43,6 +67,18 @@ def main():
             "ToolName" : i,
             "UsedInComps" : [app_query]
         })
+        
+        glb_file_name = app_uuid.hex + ".glb"
+        
+        manager.upload_file(
+            result,
+            glb_file_name,
+            )
+        # copy_file_to_location(result,glb_file_name)
+        # upload_file(glb_file_name)
+        # os.remove(glb_file_name)
+        
+        x = 0
     
     response = component_collection.query.bm25(
             query="something that goes in a microscope",

@@ -12,6 +12,22 @@ from structured_experiment_chain import (
     wikipedia_chain as experiment_wikipedia_chain
 )
 
+from google_buckets import CloudStorageManager
+import dotenv
+import os
+
+from utils import (
+    change_file_extension, convert_obj_to_stl,
+    remove_files
+)
+
+from mesh_utils import generate_mesh_images
+
+from vision_model import analyze_images
+
+from gradio_client import Client as ShapEClient
+
+dotenv.load_dotenv()
 
 apparatus_retriever_options = {
     "Arxiv": apparatus_arxiv_chain,
@@ -32,7 +48,20 @@ def generate_apparatus(input_text, retriever_choice):
     app_components =  output_text["Material"]
     component_collection = weaviate_client.collections.get("Component")
     
+    bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
+    manager = CloudStorageManager(bucket_name)
+    
     for i in app_components:
+        
+        client = ShapEClient("hysts/Shap-E")
+        client.hf_token = os.getenv("HUGGINGFACE_API_KEY")
+        result = client.predict(
+                i,	# str  in 'Prompt' Textbox component
+                1621396601,	# float (numeric value between 0 and 2147483647) in 'Seed' Slider component
+                15,	# float (numeric value between 1 and 20) in 'Guidance scale' Slider component
+                64,	# float (numeric value between 2 and 100) in 'Number of inference steps' Slider component
+                api_name="/text-to-3d"
+        )
 
         app_uuid = component_collection.data.insert({
             "Tags": output_text['Fields_of_study'],
@@ -40,6 +69,14 @@ def generate_apparatus(input_text, retriever_choice):
             "ToolName" : i,
             "UsedInComps" : [input_text]
         })
+        
+        
+        glb_file_name = app_uuid.hex + ".glb"
+        
+        manager.upload_file(
+            result,
+            glb_file_name,
+            )
     
     return output_text
 
@@ -91,6 +128,47 @@ def search_apparatus(input_text, number):
     
     return response_objects_string
 
+def review_3d_model(uuid:str) -> None:
+    """input the uuid of a 3d model"""
+    uuid = uuid.replace("-","")
+    bucket_name = os.getenv('GOOGLE_BUCKET_NAME')
+    manager = CloudStorageManager(bucket_name)
+    xx = manager.get_file_by_uuid(uuid)
+    manager.download_file(
+        xx,
+        xx
+    )
+    xx_as_stl = change_file_extension(xx,"stl")
+    convert_obj_to_stl(xx,xx_as_stl)
+    viewing_angles = [(30, 45), (60, 90), (45, 135)]
+    
+    prompt = "I am creating an 3d model of a Glass lenses for refracting light,\
+    using a text-to-3d model\
+    Do these images look correct?\
+    If not please make a suggesttion on how to improve the text input\
+    As this response will be used in a pipeline please only output a new \
+    potential prompt or output nothing, "
+    # Please keep the prompt to 5 25 words to not confuse the model"
+    
+    images = generate_mesh_images(
+        xx_as_stl,
+        viewing_angles,
+        
+        )
+    
+    response = analyze_images(
+        images, 
+        prompt, 
+        # api_key,
+        )
+    
+    #clean up
+    remove_files(images)
+    remove_files([xx,xx_as_stl])
+    return response
+    
+    
+
 generate_apparatus_interface = gr.Interface(
     fn=generate_apparatus,
     inputs=["text", gr.Radio(choices=list(apparatus_retriever_options.keys()), label="Select a retriever", value="Wikipedia")],
@@ -123,12 +201,27 @@ search_apparatus_interface = gr.Interface(
     description="If you would like an idea of the apparatuses in the vectorestore here is the place",
 )
 
+review_3d_model_interface = gr.Interface(
+    fn=review_3d_model,
+    inputs=["text"],
+    outputs="text",
+    title="Review 3D Model",
+    description="Input the UUID of a 3D model to review its images and provide feedback.",
+)
+
 demo = gr.TabbedInterface([
     generate_apparatus_interface, 
     generate_experiment_interface,
     search_experiments_interface,
     search_apparatus_interface,
-], ["Generate Apparatus", "Generate Experiment", "Search Existing Experiments","Search Existing Apparatuses"])
+    review_3d_model_interface,
+], [
+    "Generate Apparatus",
+    "Generate Experiment", 
+    "Search Existing Experiments",
+    "Search Existing Apparatuses",
+    "review_3d_model_interface"
+    ])
 
 if __name__ == "__main__":
     demo.launch()
