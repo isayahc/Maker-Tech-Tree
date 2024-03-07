@@ -33,7 +33,7 @@ def main():
     
     
     exp_uuid = science_experiment_collection.data.insert({
-        "DateCreated": datetime.now(timezone.utc),
+        # "DateCreated": datetime.now(timezone.utc),
         "FieldsOfStudy": exp_data['Fields_of_study'],
         "Tags": exp_data['Fields_of_study'],
         "Experiment_Name": exp_data['Experiment_Name'],
