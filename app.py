@@ -182,7 +182,7 @@ generate_apparatus_interface = gr.Interface(
     inputs=["text", gr.Radio(choices=list(apparatus_retriever_options.keys()), label="Select a retriever", value="Wikipedia")],
     outputs="text",
     title="Generate Apparatus",
-    description="I am here to help makers make more and learn the science behind things",
+    description="I am here to help makers make more and learn the science behind things. PLEASE NOTE: this call relies on HF calls so it may fail due to rate limits",
 )
 
 generate_experiment_interface = gr.Interface(
