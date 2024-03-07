@@ -51,6 +51,16 @@ def generate_experiment(input_text, retriever_choice):
     })
     return output_text
 
+def process_text(input_text, number):
+    # Example processing function
+    weaviate_client = init_client()
+    science_experiment_collection = weaviate_client.collections.get("ScienceEperiment")
+    response = science_experiment_collection.query.bm25(
+            query=input_text,
+            limit=3
+        )
+    return response.objects.__str__()
+
 generate_apparatus_interface = gr.Interface(
     fn=generate_apparatus,
     inputs=["text", gr.Radio(choices=list(apparatus_retriever_options.keys()), label="Select a retriever", value="Wikipedia")],
@@ -67,10 +77,19 @@ generate_experiment_interface = gr.Interface(
     description="I am here to generate and store science experiments for our users",
 )
 
+process_text_interface = gr.Interface(
+    fn=process_text,
+    inputs=["text", gr.Slider(minimum=2, maximum=6, step=1, value=2, label="Select a number")],
+    outputs="text",
+    title="Search Existing Experiments",
+    description="If you would like an idea of the experiments in the vectorestore here is the place",
+)
+
 demo = gr.TabbedInterface([
     generate_apparatus_interface, 
     generate_experiment_interface,
-], ["Generate Apparatus", "Generate Experiment"])
+    process_text_interface
+], ["Generate Apparatus", "Generate Experiment", "Search Existing Experiments"])
 
 if __name__ == "__main__":
     demo.launch()
