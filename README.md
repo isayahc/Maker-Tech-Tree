@@ -11,3 +11,7 @@ license: mit
 ---
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
+# Maker's Tech Tree
+
+A project that uses llms and OpenAI's shap-e to generate assests, as well as how these assests could be used in experiments.
