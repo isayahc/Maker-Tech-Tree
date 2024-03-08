@@ -30,39 +30,21 @@ from langchain.retrievers import ArxivRetriever
 from langchain.retrievers import PubMedRetriever
 from langchain.retrievers import WikipediaRetriever
 from operator import itemgetter
-# import dotenv
-import os
-from dotenv import load_dotenv
-
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 
-# The scheme for creating experiments
-experiment_schema = [
-    ResponseSchema(name="Material", description="list of materials need to perfrom the experiments please be specific", type="list"),
+response_schemas = [
+    ResponseSchema(name="Material", description="The base components needed to create this items from scratch DIY This item must be exact and not an estimation, also make sure each output has the obejcts name in context", type="list"),
+    ResponseSchema(name="Fields_of_study", description="List the field of study this can be used for", type="list"),
 ]
 
-
-maker_schema = [
-    ResponseSchema(name="Material", description="The base components needed to create this items from scratch DIY This item must be exact and not an estimation", type="list"),
-]
-
-experiment_output_parser = StructuredOutputParser.from_response_schemas(experiment_schema)
-maker_output_parser = StructuredOutputParser.from_response_schemas(maker_schema)
+output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-format_instructions = experiment_output_parser.get_format_instructions()
+format_instructions = output_parser.get_format_instructions()
 
 
-experiment_prompt = PromptTemplate(
-    template="You must generate well detailed science experiments.\n{format_instructions}\n{question}\n{context}",
-    input_variables=["question"],
-    partial_variables={"format_instructions": format_instructions},
-    memory = memory
-)
-
-maker_prompt = PromptTemplate(
+prompt = maker_prompt = PromptTemplate(
     template="You must generate a well detailed list of items for creating a given item from scratch. \
         Also describe the purpose for a text-to-3d model to use for extra context\n{format_instructions}\n{question}\n{context}",
     input_variables=["question"],
@@ -93,7 +75,7 @@ arxiv_retriever = ArxivRetriever(load_max_docs=2)
 model = ChatOpenAI(temperature=0,model="gpt-4")
 
 
-arxiv_retriever = ArxivRetriever(load_max_docs=2)
+retriver = arxiv_retriever = ArxivRetriever(load_max_docs=2)
 
 pub_med_retriever = PubMedRetriever()
 
@@ -101,42 +83,31 @@ wikipedia_retriever = WikipediaRetriever()
 
 arxiv_chain = (
     {"context": arxiv_retriever, "question": RunnablePassthrough()}
-    | experiment_prompt
+    | prompt
     | model
-    | experiment_output_parser
+    | output_parser
 )
 
 pub_med_chain = (
     {"context": pub_med_retriever, "question": RunnablePassthrough()}
-    | experiment_prompt
+    | prompt
     | model
-    | experiment_output_parser
+    | output_parser
 )
 
 wikipedia_chain = (
     {"context": wikipedia_retriever, "question": RunnablePassthrough()}
-    | experiment_prompt
+    | prompt
     | model
-    | experiment_output_parser
-)
-
-maker_wikipedia_chain = (
-    {"context": wikipedia_retriever, "question": RunnablePassthrough()}
-    | maker_prompt
-    | model
-    | maker_output_parser
+    | output_parser
 )
 
 
 
 
 if __name__ == "__main__":
+    query = "MicroScope"
+    pub_med_data = pub_med_chain.invoke(query)
+    wiki_data = wikipedia_chain.invoke(query)
 
-
-    # query = "how to create electronoic on a cellulose subtstrate"
-    query = "A Microscope"
-
-    # output = wikipedia_chain.invoke(query)
-    output = maker_wikipedia_chain.invoke(query)
     x=0
-
